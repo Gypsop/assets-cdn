@@ -5,13 +5,12 @@ function tr(rule, fast, note) {
 }
 
 function prettify(db) {
-    let rules = JSON.parse(db.rules);
     let m = parseInt((Date.now() - db.updated) / 6e4);
     let tbody = [];
-    for (let option in rules) {
+    for (let option in db.rules) {
         if (option == "redirect") {
-            for (let domain in rules.redirect) {
-                for (let item of rules.redirect[domain]) {
+            for (let domain in db.rules.redirect) {
+                for (let item of db.rules.redirect[domain]) {
                     if (item[1]) {
                         tbody.push(tr(new RegExp(item[0]), item[1], bg.i18n("redirect", domain)));
                     } else {
@@ -20,8 +19,8 @@ function prettify(db) {
                 }
             }
         } else {
-            for (let type in rules[option]) {
-                for (let item of rules[option][type]) {
+            for (let type in db.rules[option]) {
+                for (let item of db.rules[option][type]) {
                     tbody.push(tr(item, "", bg.i18n("close", type)));
                 }
             }
@@ -32,7 +31,7 @@ function prettify(db) {
     } else {
         $("#updated").html(bg.i18n("last updated:", m));
     }
-    $("input").val(db.rules_url);
+    $("input").val(db.rulesUrl);
     $("tbody").html(tbody.join(""));
 }
 
@@ -59,7 +58,7 @@ $("input").bind("input propertychange", function() {
 $("form").submit(function(e) {
     e.preventDefault();
     $("button").addClass("disabled");
-    bg.get_rules($("input").val(), function(status, info) {
+    bg.getRules($("input").val(), function(status, info) {
         if (status) {
             browser.storage.local.get(function(db) {
                 prettify(db);
