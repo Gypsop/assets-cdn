@@ -1,0 +1,39 @@
+{
+    "manifest_version": 2,
+    "name": "Assets CDN",
+    "version": "1.1.12",
+    "description": "__MSG_description__",
+    "default_locale": "en",
+    "icons": {
+        "48": "icons/gitlab.svg"
+    },
+    "browser_action": {
+        "browser_style": false,
+        "default_icon": "icons/gitlab.svg"
+    },
+    "background": {
+        "scripts": [
+            "libs/jquery.min.js",
+            "background/background.js"
+        ]
+    },
+    "options_ui": {
+        "page": "options/options.html",
+        "browser_style": false,
+        "open_in_tab": true
+    },
+    "permissions": [
+        "dns",
+        "webRequest",
+        "webRequestBlocking",
+        "http://*/*",
+        "https://*/*",
+        "storage"
+    ],
+    "applications": {
+        "gecko": {
+            "id": "{633446bf-455c-422d-9167-47745b7a8e67}"
+        }
+    },
+    "homepage_url": "https://gitlab.com/jacksao/assets-cdn"
+}

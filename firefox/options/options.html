@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <title>Assets CDN</title>
+    <link rel="stylesheet" href="../libs/bootstrap.min.css">
+    <link rel="stylesheet" href="options.css">
+</head>
+
+<body>
+    <div class="container">
+        <form>
+            <div class="clearfix">
+                <strong class="float-left" i18n>rules set:</strong>
+                <small id="updated" class="float-right"></small>
+            </div>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="https://gitlab.com/jacksao/assets-cdn/raw/master/rules.json">
+                <div class="input-group-append">
+                    <button class="btn btn-success" type="submit" i18n>update</button>
+                </div>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+                <thead class="table-active">
+                    <tr>
+                        <th i18n>match rules</th>
+                        <th i18n>fast site</th>
+                        <th i18n>note</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="../libs/jquery.min.js"></script>
+    <script src="options.js"></script>
+</body>
+
+</html>
