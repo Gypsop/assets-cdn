@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Assets CDN",
-    "version": "1.1.12",
+    "version": "1.1.13",
     "description": "__MSG_description__",
     "default_locale": "en",
     "icons": {
@@ -35,5 +35,5 @@
             "id": "{633446bf-455c-422d-9167-47745b7a8e67}"
         }
     },
-    "homepage_url": "https://gitlab.com/jacksao/assets-cdn"
+    "homepage_url": "https://github.com/saowang/assets-cdn"
 }

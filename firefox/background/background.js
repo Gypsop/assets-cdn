@@ -1,7 +1,7 @@
 let global = {
     status: true,
     assets: 0,
-    rules_url: "https://gitlab.com/jacksao/assets-cdn/raw/master/rules.json",
+    rules_url: "https://github.com/saowang/assets-cdn/raw/master/rules.json",
     rules: {},
     desktop: !navigator.userAgent.match(/mobile/i)
 };

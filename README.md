@@ -13,7 +13,7 @@ Custom rules cancel or redirect CDN or cancel CNAME, rules default acceleration:
 
 ## 开发
 ```bash
-git clone https://gitlab.com/jacksao/assets-cdn.git
+git clone https://github.com/saowang/assets-cdn.git
 sudo npm install -g web-ext
 
 web-ext --help
