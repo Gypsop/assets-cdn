@@ -34,6 +34,7 @@ async function redirect(details) {
                         result.cancel = true;
                     }
                 } else if (match) {
+                    autoAddBadgeText();
                     result.cancel = true;
                 }
             } else {
