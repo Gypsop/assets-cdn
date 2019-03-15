@@ -25,15 +25,6 @@ function autoAdd() {
 }
 
 
-function getReplaceRegExp(string) {
-    let match = string.match(/\(((?!\?:)([^()]*\([^()]*\)[^()]*)*[^)]*)\)/);
-    if (match) {
-        string = match[1];
-    }
-    return new RegExp(string);
-}
-
-
 async function redirect(details) {
     let resolved = await browser.dns.resolve(details.url.match(/^https?:\/\/([^/]+)\/?/)[1], ["canonical_name"]);
     let result = {};
@@ -52,7 +43,7 @@ async function redirect(details) {
             } else {
                 if (match) {
                     autoAdd();
-                    result.redirectUrl = details.url.replace(match[1], match[1].replace(getReplaceRegExp(rule[0]), rule[1]));
+                    result.redirectUrl = details.url.replace(match[1], rule[1]);
                 }
             }
         }
@@ -60,35 +51,35 @@ async function redirect(details) {
     return result;
 };
 
-let optimize = {
-    document: function(details) {
-        let filter = browser.webRequest.filterResponseData(details.requestId);
-        let decoder = new TextDecoder("utf-8");
-        let encoder = new TextEncoder();
-        autoAdd();
-        filter.ondata = event => {
-            let str = decoder.decode(event.data, {
-                stream: true
-            });
-            str = str.replace(/(crossorigin|http-equiv|integrity)="[^"]+"/igm, "");
-            filter.write(encoder.encode(str));
-        };
-        filter.onstop = event => {
-            filter.disconnect();
-        };
-    },
-    headers: function(details) {
-        autoAdd();
-        for (let i = 0; i < details.responseHeaders.length; i++) {
-            if (details.responseHeaders[i].name.match(/(content-security-policy|referrer-policy)/i)) {
-                details.responseHeaders.splice(i, 1);
-            }
+function optimizeDocument(details) {
+    let filter = browser.webRequest.filterResponseData(details.requestId);
+    let decoder = new TextDecoder("utf-8");
+    let encoder = new TextEncoder();
+    autoAdd();
+    filter.ondata = event => {
+        let str = decoder.decode(event.data, {
+            stream: true
+        });
+        str = str.replace(/(crossorigin|http-equiv|integrity)="[^"]+"/igm, "");
+        filter.write(encoder.encode(str));
+    };
+    filter.onstop = event => {
+        filter.disconnect();
+    };
+}
+
+function optimizeHeaders(details) {
+    autoAdd();
+    for (let i = 0; i < details.responseHeaders.length; i++) {
+        if (details.responseHeaders[i].name.match(/(content-security-policy|referrer-policy)/i)) {
+            details.responseHeaders.splice(i, 1);
         }
-        return {
-            responseHeaders: details.responseHeaders
-        };
     }
-};
+    return {
+        responseHeaders: details.responseHeaders
+    };
+}
+
 
 function addListener() {
     if (global.desktop) {
@@ -109,13 +100,13 @@ function addListener() {
     }
     if ("optimize" in global.rules) {
         if ("document" in global.rules.optimize) {
-            browser.webRequest.onBeforeRequest.addListener(optimize.document, {
+            browser.webRequest.onBeforeRequest.addListener(optimizeDocument, {
                 types: ["main_frame", "sub_frame"],
                 urls: global.rules.optimize.document
             }, ["blocking"]);
         }
         if ("headers" in global.rules.optimize) {
-            browser.webRequest.onHeadersReceived.addListener(optimize.headers, {
+            browser.webRequest.onHeadersReceived.addListener(optimizeHeaders, {
                 types: ["main_frame", "sub_frame"],
                 urls: global.rules.optimize.headers
             }, ["blocking", "responseHeaders"]);
@@ -140,10 +131,10 @@ function removeListener() {
     }
     if ("optimize" in global.rules) {
         if ("document" in global.rules.redirect) {
-            browser.webRequest.onBeforeRequest.removeListener(optimize.document);
+            browser.webRequest.onBeforeRequest.removeListener(optimizeDocument);
         }
         if ("headers" in global.rules.redirect) {
-            browser.webRequest.onHeadersReceived.removeListener(optimize.headers);
+            browser.webRequest.onHeadersReceived.removeListener(optimizeHeaders);
         }
     }
 }
@@ -156,35 +147,42 @@ function auto_add() {
     }
 }
 
-storage.get(function(setting) {
-    if ("rulesUrl" in setting) {
-        global.rulesUrl = setting.rulesUrl;
-    }
-    if ("status" in setting) {
-        global.status = setting.status;
-    }
+function init() {
+    storage.get(function(setting) {
+        if ("rulesUrl" in setting) {
+            global.rulesUrl = setting.rulesUrl;
+        }
+        if ("status" in setting) {
+            global.status = setting.status;
+        }
 
-    if (global.status) {
-        $.ajax({
-            type: "GET",
-            url: global.rulesUrl,
-            cache: false,
-            dataType: "json",
-            success: function(rules) {
-                storage.set({
-                    updated: Date.now()
-                });
-                global.rules = rules;
-                addListener();
-            },
-            error: function(e) {
-                console.log(e);
-            }
-        });
-    } else {
-        removeListener();
-    }
-});
+        if (global.status) {
+            $.ajax({
+                type: "GET",
+                url: global.rulesUrl,
+                cache: false,
+                dataType: "json",
+                success: function(rules) {
+                    storage.set({
+                        updated: Date.now()
+                    });
+                    global.rules = rules;
+                    addListener();
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+        } else {
+            removeListener();
+        }
+    });
+}
+
+init();
 browser.browserAction.onClicked.addListener(function() {
-    init_rules(() => init(!global.status));
+    storage.set({
+        status: !global.status
+    });
+    init();
 });
