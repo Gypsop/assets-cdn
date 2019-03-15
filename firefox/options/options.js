@@ -1,52 +1,44 @@
 let bg = browser.extension.getBackgroundPage();
 
-function tr(rule, fast, note) {
-    return `<tr><td><code>${rule}</code></td><td><code>${fast}</code></td><td><small>${note}</small></td></tr>`;
-}
-
-function prettify(db) {
-    let m = parseInt((Date.now() - db.updated) / 6e4);
-    let tbody = [];
-    for (let option in db.rules) {
-        if (option == "redirect") {
-            for (let domain in db.rules.redirect) {
-                for (let item of db.rules.redirect[domain]) {
-                    if (item[1]) {
-                        tbody.push(tr(new RegExp(item[0]), item[1], bg.i18n("redirect", domain)));
-                    } else {
-                        tbody.push(tr(new RegExp(item[0]), "", bg.i18n("cancel", domain)));
+function prettify() {
+    browser.storage.local.get(function(setting) {
+        let minute = parseInt((Date.now() - setting.updated) / 6e4);
+        let tbody = [];
+        let tr = function(rule, fast, note) {
+            return `<tr><td><code>${rule}</code></td><td><code>${fast}</code></td><td><small>${note}</small></td></tr>`;
+        }
+        let variable = bg.getVariable();
+        for (let option in variable.rules) {
+            if (option == "redirect") {
+                for (let remarks in variable.rules.redirect) {
+                    for (let rule of variable.rules.redirect[remarks]) {
+                        if (rule.length == 1) {
+                            tbody.push(tr(new RegExp(rule[0]), "", `屏蔽${remarks}`));
+                        } else {
+                            tbody.push(tr(new RegExp(rule[0]), rule[1], `重定向${remarks}`));
+                        }
+                    }
+                }
+            } else if (option == "optimize") {
+                for (let remarks in variable.rules[option]) {
+                    for (let rule of variable.rules[option][remarks]) {
+                        tbody.push(tr(rule, "", `优化${remarks}`));
                     }
                 }
             }
-        } else {
-            for (let type in db.rules[option]) {
-                for (let item of db.rules[option][type]) {
-                    tbody.push(tr(item, "", bg.i18n("close", type)));
-                }
-            }
         }
-    }
-    if (m < 2) {
-        $("#updated").html(bg.i18n("last updated: just now"));
-    } else {
-        $("#updated").html(bg.i18n("last updated:", m));
-    }
-    $("input").val(db.rulesUrl);
-    $("tbody").html(tbody.join(""));
+        if (minute < 1) {
+            $("#updated").html("上次更新: 刚刚");
+        } else {
+            $("#updated").html(`上次更新: ${minute}分钟前`);
+        }
+        $("input").attr("placeholder", variable.defaultRulesUrl);
+        $("input").val(setting.rulesUrl);
+        $("tbody").html(tbody.join(""));
+    });
 }
 
-$("*[i18n]").each(function() {
-    $(this).text(bg.i18n(this.textContent))
-});
-$("title").text(function() {
-    return bg.i18n("Assets CDN setting", browser.runtime.getManifest().version);
-});
-
-// 这里只是加载后显示
-browser.storage.local.get(function(db) {
-    prettify(db);
-});
-
+prettify();
 $("input").bind("input propertychange", function() {
     let value = $("input").val();
     if (value == "" || /https?:\/\/.+\.json$/.test(value)) {
@@ -58,14 +50,20 @@ $("input").bind("input propertychange", function() {
 $("form").submit(function(e) {
     e.preventDefault();
     $("button").addClass("disabled");
-    bg.getRules($("input").val(), function(status, info) {
+    let rulesUrl = $("input").val();
+    if (rulesUrl.length == 0) {
+        rulesUrl = $("input").attr("placeholder");
+    }
+    bg.tryUpdateRulesWith(rulesUrl, function(status) {
         if (status) {
-            browser.storage.local.get(function(db) {
-                prettify(db);
-                bg.init(db.status);
-            });
+            prettify();
+            alert("规则更新成功~");
+        } else {
+            alert("规则更新失败!");
         }
-        alert(info);
         $("button").removeClass("disabled");
     });
+});
+$("title").text(function() {
+    return `${$(this).text()} v${browser.runtime.getManifest().version}`;
 });

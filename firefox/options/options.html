@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Assets CDN</title>
     <link rel="stylesheet" href="../libs/bootstrap.min.css">
     <link rel="stylesheet" href="options.css">
@@ -14,13 +14,13 @@
     <div class="container">
         <form>
             <div class="clearfix">
-                <strong class="float-left" i18n>rules set:</strong>
+                <strong class="float-left">规则设置:</strong>
                 <small id="updated" class="float-right"></small>
             </div>
             <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="https://gitlab.com/jacksao/assets-cdn/raw/master/rules.json">
+                <input type="text" class="form-control">
                 <div class="input-group-append">
-                    <button class="btn btn-success" type="submit" i18n>update</button>
+                    <button class="btn btn-success" type="submit">更新</button>
                 </div>
             </div>
         </form>
@@ -28,14 +28,17 @@
             <table class="table table-bordered table-sm">
                 <thead class="table-active">
                     <tr>
-                        <th i18n>match rules</th>
-                        <th i18n>fast site</th>
-                        <th i18n>note</th>
+                        <th>匹配规则</th>
+                        <th>加速网站</th>
+                        <th>备注</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </div>
+        <footer class="text-center">
+            <a href="https://addons.mozilla.org/zh-CN/firefox/addon/assets-cdn/reviews/" target="_blank">评价一下</a>
+        </footer>
     </div>
     <script src="../libs/jquery.min.js"></script>
     <script src="options.js"></script>

@@ -1,40 +1,36 @@
-let global = {
+let runtime = {
     status: true,
     assets: 0,
-    //rulesUrl: "https://raw.githubusercontent.com/saowang/assets-cdn/master/rules.json",
-    rulesUrl: "http://localhost/rules.json",
     rules: {},
     desktop: !navigator.userAgent.match(/mobile/i)
 };
+const defaultRulesUrl = "https://raw.githubusercontent.com/saowang/assets-cdn/master/rules.json";
 
-let storage = {
-    get: function(callback) {
-        browser.storage.local.get(callback);
-    },
-    set: function(object) {
-        browser.storage.local.set(object);
-    }
-};
+function getVariable() {
+    return {
+        rules: runtime.rules,
+        defaultRulesUrl: defaultRulesUrl
+    };
+}
 
-function autoAdd() {
-    if (global.desktop) {
+function autoAddBadgeText() {
+    if (runtime.desktop) {
         browser.browserAction.setBadgeText({
-            text: (++global.assets).toString()
+            text: (++runtime.assets).toString()
         });
     }
 }
 
-
 async function redirect(details) {
     let resolved = await browser.dns.resolve(details.url.match(/^https?:\/\/([^/]+)\/?/)[1], ["canonical_name"]);
     let result = {};
-    for (let item in global.rules.redirect) {
-        for (let rule of global.rules.redirect[item]) {
+    for (let item in runtime.rules.redirect) {
+        for (let rule of runtime.rules.redirect[item]) {
             let match = details.url.match(new RegExp(rule[0]));
             if (rule.length == 1) {
                 if (item == "CNAME" && "canonicalName" in resolved) {
                     if (resolved.canonicalName.match(rule[0])) {
-                        autoAdd();
+                        autoAddBadgeText();
                         result.cancel = true;
                     }
                 } else if (match) {
@@ -42,7 +38,7 @@ async function redirect(details) {
                 }
             } else {
                 if (match) {
-                    autoAdd();
+                    autoAddBadgeText();
                     result.redirectUrl = details.url.replace(match[1], rule[1]);
                 }
             }
@@ -55,7 +51,7 @@ function optimizeDocument(details) {
     let filter = browser.webRequest.filterResponseData(details.requestId);
     let decoder = new TextDecoder("utf-8");
     let encoder = new TextEncoder();
-    autoAdd();
+    autoAddBadgeText();
     filter.ondata = event => {
         let str = decoder.decode(event.data, {
             stream: true
@@ -69,7 +65,7 @@ function optimizeDocument(details) {
 }
 
 function optimizeHeaders(details) {
-    autoAdd();
+    autoAddBadgeText();
     for (let i = 0; i < details.responseHeaders.length; i++) {
         if (details.responseHeaders[i].name.match(/(content-security-policy|referrer-policy)/i)) {
             details.responseHeaders.splice(i, 1);
@@ -80,11 +76,10 @@ function optimizeHeaders(details) {
     };
 }
 
-
 function addListener() {
-    if (global.desktop) {
+    if (runtime.desktop) {
         browser.browserAction.getBadgeText({}).then(function(text) {
-            global.assets = text == "" ? 0 : parseInt(text);
+            runtime.assets = text == "" ? 0 : parseInt(text);
         });
         browser.browserAction.setIcon({
             path: "icons/gitlab.svg"
@@ -93,29 +88,29 @@ function addListener() {
             color: "green"
         });
     }
-    if ("redirect" in global.rules) {
+    if ("redirect" in runtime.rules) {
         browser.webRequest.onBeforeRequest.addListener(redirect, {
             urls: ["*://*/*"]
         }, ["blocking"]);
     }
-    if ("optimize" in global.rules) {
-        if ("document" in global.rules.optimize) {
+    if ("optimize" in runtime.rules) {
+        if ("document" in runtime.rules.optimize) {
             browser.webRequest.onBeforeRequest.addListener(optimizeDocument, {
                 types: ["main_frame", "sub_frame"],
-                urls: global.rules.optimize.document
+                urls: runtime.rules.optimize.document
             }, ["blocking"]);
         }
-        if ("headers" in global.rules.optimize) {
+        if ("headers" in runtime.rules.optimize) {
             browser.webRequest.onHeadersReceived.addListener(optimizeHeaders, {
                 types: ["main_frame", "sub_frame"],
-                urls: global.rules.optimize.headers
+                urls: runtime.rules.optimize.headers
             }, ["blocking", "responseHeaders"]);
         }
     }
 }
 
 function removeListener() {
-    if (global.desktop) {
+    if (runtime.desktop) {
         browser.browserAction.setBadgeText({
             text: ""
         });
@@ -126,63 +121,60 @@ function removeListener() {
             path: "icons/gitlab-gray.svg"
         });
     }
-    if ("redirect" in global.rules) {
+    if ("redirect" in runtime.rules) {
         browser.webRequest.onBeforeRequest.removeListener(redirect);
     }
-    if ("optimize" in global.rules) {
-        if ("document" in global.rules.redirect) {
+    if ("optimize" in runtime.rules) {
+        if ("document" in runtime.rules.optimize) {
             browser.webRequest.onBeforeRequest.removeListener(optimizeDocument);
         }
-        if ("headers" in global.rules.redirect) {
+        if ("headers" in runtime.rules.optimize) {
             browser.webRequest.onHeadersReceived.removeListener(optimizeHeaders);
         }
     }
 }
 
-function auto_add() {
-    if (global.desktop) {
-        browser.browserAction.setBadgeText({
-            text: (++global.assets).toString()
-        });
-    }
+function tryUpdateRulesWith(rulesUrl, callback) {
+    $.ajax({
+        type: "GET",
+        url: rulesUrl,
+        cache: false,
+        dataType: "json",
+        success: function(rules) {
+            browser.storage.local.set({
+                rulesUrl: rulesUrl,
+                updated: Date.now()
+            });
+            runtime.rules = rules;
+            addListener();
+            callback(true);
+        },
+        error: function() {
+            callback(false);
+        }
+    });
 }
 
-function init() {
-    storage.get(function(setting) {
+function initialization(rulesUrl = defaultRulesUrl) {
+    browser.storage.local.get(function(setting) {
         if ("rulesUrl" in setting) {
-            global.rulesUrl = setting.rulesUrl;
+            rulesUrl = setting.rulesUrl;
         }
         if ("status" in setting) {
-            global.status = setting.status;
+            runtime.status = setting.status;
         }
-
-        if (global.status) {
-            $.ajax({
-                type: "GET",
-                url: global.rulesUrl,
-                cache: false,
-                dataType: "json",
-                success: function(rules) {
-                    storage.set({
-                        updated: Date.now()
-                    });
-                    global.rules = rules;
-                    addListener();
-                },
-                error: function(e) {
-                    console.log(e);
-                }
-            });
+        if (runtime.status) {
+            tryUpdateRulesWith(rulesUrl);
         } else {
             removeListener();
         }
     });
 }
 
-init();
+initialization();
 browser.browserAction.onClicked.addListener(function() {
-    storage.set({
-        status: !global.status
+    browser.storage.local.set({
+        status: !runtime.status
     });
-    init();
+    initialization();
 });

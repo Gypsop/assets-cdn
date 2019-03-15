@@ -28,18 +28,18 @@
             ["^https?://(dashboard\\.heroku\\.com)/assets/.+", "heroku.oss-cn-hongkong.aliyuncs.com"]
         ],
         "gitlab": [
-            ["^https?://(assets\\.gitlab-static\\.net)", "gitlab-assets.oss-cn-hongkong.aliyuncs.com"],
-            ["^https?://(about\\.gitlab\\.com)", "gitlab.com/users/sign_in"]
+            ["^https?://(assets\\.gitlab-static\\.net).*", "gitlab-assets.oss-cn-hongkong.aliyuncs.com"],
+            ["^https?://(about\\.gitlab\\.com).*", "gitlab.com/users/sign_in"]
         ],
         "github": [
             ["^https?://(github\\.com)/(?:.+/){2}(?:archive|raw|releases/download)/.+", "github-download.oss-cn-hongkong.aliyuncs.com"],
-            ["^https?://(github\\.githubassets\\.com)", "github-assets.oss-cn-hongkong.aliyuncs.com"]
+            ["^https?://(github\\.githubassets\\.com).*", "github-assets.oss-cn-hongkong.aliyuncs.com"]
         ],
         "google": [
-            ["^https?://(ajax\\.googleapis\\.com)", "ajax.proxy.ustclug.org"],
+            ["^https?://(ajax\\.googleapis\\.com).*", "ajax.proxy.ustclug.org"],
             ["^https?://www\\.google-analytics\\.com"],
             ["^https?://adservice\\.google\\.com"],
-            ["^https?://(www\\.google\\.com/(recaptcha))", "recaptcha.net/$1"]
+            ["^https?://(www\\.google\\.com/recaptcha).*", "recaptcha.net/recaptcha"]
         ],
         "youtube": [
             ["^https?://www\\.youtube\\.com"]
@@ -50,8 +50,8 @@
             ["^https?://.*googletagmanager\\.com"]
         ]
     },
-    "close": {
-        "header": [
+    "optimize": {
+        "headers": [
             "*://*.gitlab.com/*",
             "*://*.github.com/*",
             "*://recaptcha.net/*"

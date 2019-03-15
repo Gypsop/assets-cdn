@@ -1,50 +1,52 @@
 ## Assets CDN
-Custom rules cancel or redirect CDN or cancel CNAME, rules default acceleration: Gitlab,GitHub etc
+最好的网站加速器,拒绝反驳
 
 **功能:**
-- 点击扩展图标关闭或打开
-- 支持从网址加载自定义规则
-- 规则自动更新(每1小时)
-- 支持关闭默认的CSP限制
-- 目前支持`utf-8`的网页关闭限制
-- 屏蔽CNAME
+- 正则表达式自定义规则
+- 可以从你的网站加载规则
+- 根据CNAME屏蔽一类网站
+- 根据正则表达式屏蔽加载不了的网站
+- 根据正则表达式重定向加载不了的网站
+- 可以匹配规则优化网站的跨域限制
+- 提供OSS镜像加速服务(github,gitlab,heroku)
+- 当然也可以屏蔽广告
 
 **Firefox安装:** https://addons.mozilla.org/firefox/addon/assets-cdn/
 
-## 开发
+## 测试
 ```bash
 git clone https://github.com/saowang/assets-cdn.git
 sudo npm install -g web-ext
 
 web-ext --help
 ```
-**规则说明:**
+**规则举例:**
 ```js
 {
-    // 重定向网址
     "redirect": {
-        // 名称代表注释
-        "hao123": [
-            // Array长度为1, 表示正则匹配该网址后, 屏蔽该网址
-            ["https?://www.hao123.com"],
-            // Array长度为2, 表示正则匹配该网址后, 用Array[1]正则替换Array[0]第一个括号的内容
-            ["https?://(www.hao(\\d{3}).com)", "www.$1.com"]
-        ],
-        // 这个名称不能变, 表示屏蔽cname
         "CNAME": [
+            // 根据CNAME彻底屏蔽百度的广告
             [".*(yjs|yunjiasu)-cdn\\.(com|net)"]
+        ],
+        "google": [
+            // 1个代表屏蔽，2个代表重定向
+            ["^https?://(ajax\\.googleapis\\.com).*", "ajax.proxy.ustclug.org"],
+            ["^https?://www\\.google-analytics\\.com"],
+            ["^https?://adservice\\.google\\.com"],
+            ["^https?://(www\\.google\\.com/recaptcha).*", "recaptcha.net/recaptcha"]
         ]
     },
-    // 关闭content-security-policy、referrer-policy
-    "header": [
-        // 参考: Match_patterns
-        "*://*/*"
-    ],
-    // 关闭crossorigin、http-equiv、integrity
-    "document": [
-        // 参考: Match_patterns
-        "*://*/*"
-    ]
+    "optimize": {
+        "headers": [
+            // 参考 Match_patterns
+            "*://*.gitlab.com/*",
+            "*://*.github.com/*",
+            "*://recaptcha.net/*"
+        ],
+        "document": [
+            "*://*.github.com/*"
+        ]
+    }
 }
 ```
 **参考:**
