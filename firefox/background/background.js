@@ -135,47 +135,43 @@ function removeListener() {
     }
 }
 
-function tryUpdateRulesWith(rulesUrl, callback) {
+function tryInitializationWith(rulesUrl, callback) {
     $.ajax({
         type: "GET",
         url: rulesUrl,
         cache: false,
         dataType: "json",
         success: function(rules) {
-            browser.storage.local.set({
-                rulesUrl: rulesUrl,
-                updated: Date.now()
+            browser.storage.local.get(function(settings) {
+                runtime.rules = rules;
+                browser.storage.local.set({
+                    rulesUrl: rulesUrl,
+                    updated: Date.now()
+                });
+                if ("status" in settings) {
+                    runtime.status = settings.status;
+                }
+                if (runtime.status) {
+                    addListener();
+                    callback(true, "规则更新成功~");
+                } else {
+                    removeListener();
+                    callback(true, "规则更新成功~ 但是未开启插件!");
+                }
             });
-            runtime.rules = rules;
-            addListener();
-            callback(true);
         },
-        error: function() {
-            callback(false);
+        error: function(e) {
+            callback(false, "规则更新失败!");
         }
     });
 }
 
-function initialization(rulesUrl = defaultRulesUrl) {
-    browser.storage.local.get(function(setting) {
-        if ("rulesUrl" in setting) {
-            rulesUrl = setting.rulesUrl;
-        }
-        if ("status" in setting) {
-            runtime.status = setting.status;
-        }
-        if (runtime.status) {
-            tryUpdateRulesWith(rulesUrl);
-        } else {
-            removeListener();
-        }
-    });
-}
-
-initialization();
+tryInitializationWith(defaultRulesUrl);
 browser.browserAction.onClicked.addListener(function() {
     browser.storage.local.set({
         status: !runtime.status
     });
-    initialization();
+    browser.storage.local.get(function(settings) {
+        tryInitializationWith(settings.rulesUrl);
+    });
 });

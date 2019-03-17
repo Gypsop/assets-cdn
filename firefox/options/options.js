@@ -32,16 +32,14 @@ function prettify() {
         } else {
             $("#updated").html(`上次更新: ${minute}分钟前`);
         }
-        $("input").attr("placeholder", variable.defaultRulesUrl);
-        $("input").val(setting.rulesUrl);
+        $("input").attr("placeholder", variable.defaultRulesUrl).val(setting.rulesUrl).removeClass("text-warning");
         $("tbody").html(tbody.join(""));
     });
 }
 
 prettify();
 $("input").bind("input propertychange", function() {
-    let value = $("input").val();
-    if (value == "" || /https?:\/\/.+\.json$/.test(value)) {
+    if (/https?:\/\/.+\.json$/.test($(this).val())) {
         $("input").removeClass("text-warning");
     } else {
         $("input").addClass("text-warning");
@@ -54,13 +52,11 @@ $("form").submit(function(e) {
     if (rulesUrl.length == 0) {
         rulesUrl = $("input").attr("placeholder");
     }
-    bg.tryUpdateRulesWith(rulesUrl, function(status) {
+    bg.tryInitializationWith(rulesUrl, function(status, message) {
         if (status) {
             prettify();
-            alert("规则更新成功~");
-        } else {
-            alert("规则更新失败!");
         }
+        alert(message);
         $("button").removeClass("disabled");
     });
 });
