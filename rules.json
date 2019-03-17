@@ -56,7 +56,7 @@
             ["^https?://mail\\.163\\.com", ".nui-closeable,.insert-top-menu-wechat,.undefined {display: none;}"]
         ],
         "script": [
-            ["^https?://.*\\.baidu\\.com", "$(\".ec_wise_ad,.tab_news,.ZLniVS,.habody\").empty()"]
+            ["^https?://.*\\.baidu\\.com", "$(\".ec_wise_ad,.tab_news,#3001,#3002,#3003,#3004,#3005,.habody\").empty()"]
         ]
     },
     "optimize": {
