@@ -10,6 +10,10 @@
         "browser_style": false,
         "default_icon": "icons/gitlab.svg"
     },
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["libs/jquery.min.js"]
+    }],
     "background": {
         "scripts": [
             "libs/jquery.min.js",

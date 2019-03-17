@@ -46,7 +46,7 @@ web-ext --help
         ],
         // 注入script
         "script": [
-            ["^https?://github.com", "console.log(\"Assets CDN\")"]
+            ["^https?://.*\\.baidu\\.com", "$(\".ec_wise_ad,.tab_news,.habody\").empty()"]
         ]
     },
     // 参考 Match_patterns
