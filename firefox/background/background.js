@@ -2,7 +2,7 @@ let runtime = {
     status: true,
     assets: 0,
     rules: {},
-    desktop: !navigator.userAgent.match(/mobile/i)
+    desktop: !navigator.userAgent.match(/(android|mobile)/i)
 };
 const defaultRulesUrl = "https://raw.githubusercontent.com/saowang/assets-cdn/master/rules.json";
 
