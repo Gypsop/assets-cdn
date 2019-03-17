@@ -3,26 +3,17 @@
         "CNAME": [
             [".*(yjs|yunjiasu)-cdn\\.(com|net)"]
         ],
-        "AD": [
-            ["^https?://.*\\.cnzz\\.com"],
-            ["^https?://changyan\\.sohu\\.com"]
-        ],
-        "union-AD": [
+        "联盟广告": [
             ["^https?://.*(cpro|pos|hm|dup)\\.baidu(static)?\\.com"],
             ["^https?://.*epro\\.sogou\\.com"],
             ["^https?://.*union\\.360\\.cn"],
             ["^https?://.*mediav\\.com"],
             ["^https?://.*(gma|strip).alicdn.com"],
             ["^https?://.*sina\\.net"],
-            ["^https?://.*360buyimg\\.com"]
-        ],
-        "eastday-AD": [
-            ["^https?://(imgsreview|pcsoftwords).dftoutiao.com"]
-        ],
-        "game": [
-            ["^https?://(www\\.(?:4399|4399j|18183|37|6822|7k7k|2144|u77|17yy|7724|2345|17173)\\.(?:com|cn|cc).*)", "news.baidu.com"],
-            ["^https?://(game\\.hao123\\.com.*)", "news.baidu.com"],
-            ["^https?://(xiaoyouxi\\.360\\.cn.*)", "news.baidu.com"]
+            ["^https?://.*360buyimg\\.com"],
+            ["^https?://(imgsreview|pcsoftwords).dftoutiao.com"],
+            ["^https?://adservice\\.google\\.com"],
+            ["^https?://changyan\\.sohu\\.com"]
         ],
         "heroku": [
             ["^https?://(dashboard\\.heroku\\.com)/assets/.+", "heroku.oss-cn-hongkong.aliyuncs.com"]
@@ -37,17 +28,27 @@
         ],
         "google": [
             ["^https?://(ajax\\.googleapis\\.com).*", "ajax.proxy.ustclug.org"],
-            ["^https?://www\\.google-analytics\\.com"],
-            ["^https?://adservice\\.google\\.com"],
             ["^https?://(www\\.google\\.com/recaptcha).*", "recaptcha.net/recaptcha"]
         ],
-        "youtube": [
-            ["^https?://www\\.youtube\\.com"]
+        "野猪撸广告": [
+            ["^https?://.*\\.(sinaimg|gemgsx|9118)\\.(cn|com)"]
         ],
-        "runoob": [
+        "菜鸟教程广告": [
             ["^https?://.*doubleclick\\.net"],
             ["^https?://.*googlesyndication\\.com"],
             ["^https?://.*googletagmanager\\.com"]
+        ],
+        "小游戏网站": [
+            ["^https?://(www\\.(?:4399|4399j|18183|37|6822|7k7k|2144|u77|17yy|7724|2345|17173)\\.(?:com|cn|cc).*)", "news.baidu.com"],
+            ["^https?://(game\\.hao123\\.com.*)", "news.baidu.com"],
+            ["^https?://(xiaoyouxi\\.360\\.cn.*)", "news.baidu.com"]
+        ],
+        "被封网站": [
+            ["^https?://www\\.youtube\\.com"]
+        ],
+        "网站统计": [
+            ["^https?://.*\\.cnzz\\.com"],
+            ["^https?://www\\.google-analytics\\.com"]
         ]
     },
     "optimize": {
