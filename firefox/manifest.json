@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Assets CDN",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "description": "可能是最好的网站加速器",
     "icons": {
         "48": "icons/gitlab.svg"
