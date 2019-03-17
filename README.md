@@ -10,6 +10,8 @@
 - 可以匹配规则优化网站的跨域限制
 - 提供OSS镜像加速服务(github,gitlab,heroku)
 - 当然也可以屏蔽广告
+- 根据正则注入css或script
+- 根据正则开启https
 
 **Firefox安装:** https://addons.mozilla.org/firefox/addon/assets-cdn/
 

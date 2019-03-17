@@ -46,7 +46,27 @@ async function redirect(details) {
         }
     }
     return result;
-};
+}
+
+function injection(details) {
+    for (let item in runtime.rules.injection) {
+        for (let rule of runtime.rules.injection[item]) {
+            let match = details.url.match(new RegExp(rule[0]));
+            if (match) {
+                if (item == "css") {
+                    browser.tabs.insertCSS({
+                        code: `${rule[1]}`
+                    });
+                } else if (item == "script") {
+                    browser.tabs.executeScript({
+                        code: `${rule[1]}`
+                    });
+                }
+                autoAddBadgeText();
+            }
+        }
+    }
+}
 
 function optimizeDocument(details) {
     let filter = browser.webRequest.filterResponseData(details.requestId);
@@ -77,6 +97,16 @@ function optimizeHeaders(details) {
     };
 }
 
+function optimizeHttps(details) {
+    let match = details.url.match(/^https?/);
+    if (match[0] == "http") {
+        autoAddBadgeText();
+        return {
+            redirectUrl: details.url.replace(/^http/, "https")
+        }
+    }
+}
+
 function addListener() {
     if (runtime.desktop) {
         browser.browserAction.getBadgeText({}).then(function(text) {
@@ -94,6 +124,11 @@ function addListener() {
             urls: ["*://*/*"]
         }, ["blocking"]);
     }
+    if ("injection" in runtime.rules) {
+        browser.webRequest.onBeforeRequest.addListener(injection, {
+            urls: ["*://*/*"]
+        }, ["blocking"]);
+    }
     if ("optimize" in runtime.rules) {
         if ("document" in runtime.rules.optimize) {
             browser.webRequest.onBeforeRequest.addListener(optimizeDocument, {
@@ -106,6 +141,11 @@ function addListener() {
                 types: ["main_frame", "sub_frame"],
                 urls: runtime.rules.optimize.headers
             }, ["blocking", "responseHeaders"]);
+        }
+        if ("https" in runtime.rules.optimize) {
+            browser.webRequest.onBeforeRequest.addListener(optimizeHttps, {
+                urls: runtime.rules.optimize.https
+            }, ["blocking"]);
         }
     }
 }
@@ -125,12 +165,18 @@ function removeListener() {
     if ("redirect" in runtime.rules) {
         browser.webRequest.onBeforeRequest.removeListener(redirect);
     }
+    if ("injection" in runtime.rules) {
+        browser.webRequest.onBeforeRequest.removeListener(injection);
+    }
     if ("optimize" in runtime.rules) {
         if ("document" in runtime.rules.optimize) {
             browser.webRequest.onBeforeRequest.removeListener(optimizeDocument);
         }
         if ("headers" in runtime.rules.optimize) {
             browser.webRequest.onHeadersReceived.removeListener(optimizeHeaders);
+        }
+        if ("https" in runtime.rules.optimize) {
+            browser.webRequest.onBeforeRequest.removeListener(optimizeHttps);
         }
     }
 }

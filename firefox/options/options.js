@@ -19,9 +19,15 @@ function prettify() {
                         }
                     }
                 }
+            } else if (option == "injection") {
+                for (let remarks in variable.rules.injection) {
+                    for (let rule of variable.rules.injection[remarks]) {
+                        tbody.push(tr(rule[0], rule[1], `注入${remarks}`));
+                    }
+                }
             } else if (option == "optimize") {
-                for (let remarks in variable.rules[option]) {
-                    for (let rule of variable.rules[option][remarks]) {
+                for (let remarks in variable.rules.optimize) {
+                    for (let rule of variable.rules.optimize[remarks]) {
                         tbody.push(tr(rule, "", `优化${remarks}`));
                     }
                 }
