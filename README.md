@@ -25,6 +25,7 @@ web-ext --help
 **规则举例:**
 ```js
 {
+    // 参考 RegExp
     "redirect": {
         "CNAME": [
             // 根据CNAME彻底屏蔽百度的广告
@@ -38,15 +39,31 @@ web-ext --help
             ["^https?://(www\\.google\\.com/recaptcha).*", "recaptcha.net/recaptcha"]
         ]
     },
+    "injection": {
+        // 注入css
+        "css": [
+            ["^https?://mail\\.163\\.com", ".nui-closeable,.insert-top-menu-wechat,.undefined {display: none;}"]
+        ],
+        // 注入script
+        "script": [
+            ["^https?://github.com", "console.log(\"Assets CDN\")"]
+        ]
+    },
+    // 参考 Match_patterns
     "optimize": {
+        // 关闭headers设置的的跨域限制
         "headers": [
-            // 参考 Match_patterns
             "*://*.gitlab.com/*",
             "*://*.github.com/*",
             "*://recaptcha.net/*"
         ],
+        // 关闭页面内标签设置的跨域限制
         "document": [
             "*://*.github.com/*"
+        ],
+        // 开启https
+        "https": [
+            "*://*.runoob.com/*"
         ]
     }
 }
