@@ -51,6 +51,14 @@
             ["^https?://www\\.google-analytics\\.com"]
         ]
     },
+    "injection": {
+        "css": [
+            ["^https?://mail\\.163\\.com", ".nui-closeable,.insert-top-menu-wechat,.undefined {display: none;}"]
+        ],
+        "script": [
+            ["^https?://github.com", "console.log(\"Assets CDN\")"]
+        ]
+    },
     "optimize": {
         "headers": [
             "*://*.gitlab.com/*",
@@ -59,6 +67,9 @@
         ],
         "document": [
             "*://*.github.com/*"
+        ],
+        "https": [
+            "*://*.runoob.com/*"
         ]
     }
 }
