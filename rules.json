@@ -28,6 +28,7 @@
         ],
         "google": [
             ["^https?://(ajax\\.googleapis\\.com).*", "ajax.proxy.ustclug.org"],
+            ["^https?://(themes\\.googleusercontent\\.com).*", "themes.loli.net"],
             ["^https?://(www\\.google\\.com/recaptcha).*", "recaptcha.net/recaptcha"]
         ],
         "野猪撸广告": [
