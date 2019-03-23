@@ -1,4 +1,5 @@
 ## Assets CDN
+![Mozilla Add-on](https://img.shields.io/amo/v/assets-cdn.svg)
 ![Mozilla Add-on](https://img.shields.io/amo/users/assets-cdn.svg)
 ![Mozilla Add-on](https://img.shields.io/amo/dw/assets-cdn.svg)
 
