@@ -2,6 +2,7 @@
 ![Mozilla Add-on](https://img.shields.io/amo/v/assets-cdn.svg)
 ![Mozilla Add-on](https://img.shields.io/amo/users/assets-cdn.svg)
 ![Mozilla Add-on](https://img.shields.io/amo/dw/assets-cdn.svg)
+![Mozilla Add-on](https://img.shields.io/amo/stars/assets-cdn.svg)
 
 **功能:**
 - 正则表达式自定义规则
