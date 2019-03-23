@@ -1,5 +1,6 @@
 ## Assets CDN
-可能是最好的网站加速器
+![Mozilla Add-on](https://img.shields.io/amo/dw/assets-cdn.svg)
+![Mozilla Add-on](https://img.shields.io/amo/users/assets-cdn.svg)
 
 **功能:**
 - 正则表达式自定义规则
